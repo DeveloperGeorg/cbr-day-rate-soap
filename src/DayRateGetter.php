@@ -101,8 +101,11 @@ class DayRateGetter implements DayRateGetterInterface
      *
      * @return DayRate|null
      */
-    private function findSimpleOrReversed(array $responseDayRateList, Currency $quoteCurrency, Currency $baseCurrency): ?DayRate
-    {
+    private function findSimpleOrReversed(
+        array $responseDayRateList,
+        Currency $quoteCurrency,
+        Currency $baseCurrency
+    ): ?DayRate {
         $returnDayRate = null;
         foreach ($responseDayRateList as $dayRate) {
             if (
