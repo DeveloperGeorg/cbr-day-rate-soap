@@ -17,8 +17,8 @@
   "bin": [
   ],
   "require": {
-    "developergeorg/day-rate": "@dev",
-    "developergeorg/cbr-simple-soap": "@dev",
+    "developergeorg/day-rate": ">=2.",
+    "developergeorg/cbr-simple-soap": ">=2.",
     "ext-simplexml": "*",
     "phpunit/phpunit": "^9.3"
   },

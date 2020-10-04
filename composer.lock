@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48f27c51f04408208e532d869644d6e8",
+    "content-hash": "77ac863cb9a51a0a750103d5c8403a04",
     "packages": [
         {
             "name": "developergeorg/cbr-simple-soap",
-            "version": "dev-master",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DeveloperGeorg/cbr-simple-soap.git",
-                "reference": "fd31c7c9e3d642cb19c50fd1b3bad2b686d71e25"
+                "reference": "42e6100daf6f721c81fac449720eec4eb9b13da8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DeveloperGeorg/cbr-simple-soap/zipball/fd31c7c9e3d642cb19c50fd1b3bad2b686d71e25",
-                "reference": "fd31c7c9e3d642cb19c50fd1b3bad2b686d71e25",
+                "url": "https://api.github.com/repos/DeveloperGeorg/cbr-simple-soap/zipball/42e6100daf6f721c81fac449720eec4eb9b13da8",
+                "reference": "42e6100daf6f721c81fac449720eec4eb9b13da8",
                 "shasum": ""
             },
             "require": {
@@ -38,11 +38,11 @@
                     "email": "developergeorg@gmail.com"
                 }
             ],
-            "time": "2020-10-04T12:40:49+00:00"
+            "time": "2020-10-04T12:51:22+00:00"
         },
         {
             "name": "developergeorg/day-rate",
-            "version": "dev-master",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DeveloperGeorg/day-rate.git",
@@ -2030,10 +2030,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "developergeorg/day-rate": 20,
-        "developergeorg/cbr-simple-soap": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
