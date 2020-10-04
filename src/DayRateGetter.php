@@ -52,20 +52,16 @@ class DayRateGetter implements DayRateGetterInterface
             return $returnDayRate;
         }
         $defaultBaseCurrency = new Currency(static::DEFAULT_BASE_CURRENCY);
-        $result = $this->cbrSoapClient->GetCursOnDateXML($dateTime);
-        /** if any rate exists */
-        if ($result->GetCursOnDateXMLResult->any) {
-            $xml = new SimpleXMLElement($result->GetCursOnDateXMLResult->any);
-            foreach ($xml->ValuteCursOnDate as $currency) {
-                $rate = (float)$currency->Vcurs / (float)$currency->Vnom;
-                if ($rate != 0) {
-                    $responseDayRateList[] = new DayRate(
-                        new Currency((string)$currency->VchCode),
-                        $defaultBaseCurrency,
-                        $responseDateTime,
-                        $rate
-                    );
-                }
+        $currencyList = $this->cbrSoapClient->getCursOnDateXML($dateTime);
+        foreach ($currencyList as $currency) {
+            $rate = (float)$currency['Vcurs'] / (float)$currency['Vnom'];
+            if ($rate != 0) {
+                $responseDayRateList[] = new DayRate(
+                    new Currency((string)$currency['VchCode']),
+                    $defaultBaseCurrency,
+                    $responseDateTime,
+                    $rate
+                );
             }
         }
 
