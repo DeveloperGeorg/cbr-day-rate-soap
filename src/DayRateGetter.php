@@ -35,20 +35,21 @@ class DayRateGetter implements DayRateGetterInterface
     /**
      * @inheritDoc
      */
-    public function getList(DateTime $dateTime, Currency $quoteCurrency, ?Currency $baseCurrency = null): array
+    public function get(DateTime $dateTime, Currency $quoteCurrency, Currency $baseCurrency): ?DayRate
     {
+        $returnDayRate = null;
         $responseDayRateList = [];
         $responseDateTime = clone $dateTime;
         $responseDateTime->setTime(0, 0, 0, 0);
         if ($quoteCurrency->getCode() === $baseCurrency->getCode()) {
-            $responseDayRateList[] = new DayRate(
+            $returnDayRate = new DayRate(
                 $quoteCurrency,
                 $baseCurrency,
                 $responseDateTime,
                 1.0
             );
 
-            return $responseDayRateList;
+            return $returnDayRate;
         }
         $defaultBaseCurrency = new Currency(static::DEFAULT_BASE_CURRENCY);
         $result = $this->cbrSoapClient->GetCursOnDateXML($dateTime);
@@ -68,12 +69,60 @@ class DayRateGetter implements DayRateGetterInterface
             }
         }
 
-        if ($baseCurrency->getCode() !== $defaultBaseCurrency->getCode()) {
-            /** @todo search */
-            $dayRateList = $responseDayRateList;
-        } else {
-            $dayRateList = $responseDayRateList;
+        $returnDayRate = $this->findSimpleOrReversed($responseDayRateList, $quoteCurrency, $baseCurrency);
+
+        if ($returnDayRate === null) {
+            /**
+             * @note Code below tries to find rate across other rates
+             * @warning Searching tries to find across RUR as base currency only,
+             * cause CBR has only RUR as base currency
+             */
+            if ($defaultBaseCurrency->getCode() !== $baseCurrency->getCode()) {
+                $firstDayRate = $this->findSimpleOrReversed($responseDayRateList, $quoteCurrency, $defaultBaseCurrency);
+                $secondDayRate = $this->findSimpleOrReversed($responseDayRateList, $defaultBaseCurrency, $baseCurrency);
+                if ($firstDayRate !== null && $secondDayRate !== null) {
+                    $returnDayRate = new DayRate(
+                        $quoteCurrency,
+                        $baseCurrency,
+                        $dateTime,
+                        $firstDayRate->getPrice() * $secondDayRate->getPrice()
+                    );
+                }
+            }
         }
-        return $dayRateList;
+
+        return $returnDayRate;
+    }
+
+    /**
+     * @param array $responseDayRateList
+     * @param Currency $quoteCurrency
+     * @param Currency $baseCurrency
+     *
+     * @return DayRate|null
+     */
+    private function findSimpleOrReversed(array $responseDayRateList, Currency $quoteCurrency, Currency $baseCurrency): ?DayRate
+    {
+        $returnDayRate = null;
+        foreach ($responseDayRateList as $dayRate) {
+            if (
+                $quoteCurrency->getCode() === $dayRate->getQuoteCurrency()->getCode()
+                && $baseCurrency->getCode() === $dayRate->getBaseCurrency()->getCode()
+            ) {
+                $returnDayRate = $dayRate;
+                break;
+            } elseif (
+                $baseCurrency->getCode() === $dayRate->getQuoteCurrency()->getCode()
+                && $quoteCurrency->getCode() === $dayRate->getBaseCurrency()->getCode()
+            ) {
+                $newDayRate = clone $dayRate;
+                $newDayRate->setQuoteCurrency($dayRate->getBaseCurrency());
+                $newDayRate->setBaseCurrency($dayRate->getQuoteCurrency());
+                $newDayRate->setPrice(1 / $dayRate->getPrice());
+                $returnDayRate = $newDayRate;
+                break;
+            }
+        }
+        return $returnDayRate;
     }
 }
